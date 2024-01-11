@@ -1,45 +1,63 @@
+library(DT)
 library(shiny)
 library(shinydashboard)
-library(DT)
-library(caret)
-library(ggplot2)
-
 
 
 # Interface ---------------------------------------------------------------
 
-ui <- dashboardPage(skin = "purple",
+ui <- dashboardPage(
   dashboardHeader(title = "Crédit immobilier"),  # Titre
   dashboardSidebar(
     
+    h4(tags$a(href = "https://github.com/mouyaaz", "Mustapha OUYAAZ")),
+    h4(tags$a(href = "https://github.com/taphakh", "Moustapha KHATTARY")),
+    
     # Entrées
-    numericInput("emprunt", "Le montant du projet (€):",value = 100000,min = 0),
-    sliderInput("duree", "Durée du crédit (années):", min = 0, max = 30, value = 15, step = 1),
-    numericInput("taux_interet", "Taux d'intérêt (%):",min = 1, max = 100, value = 15 , step = 0.01 ), 
-    numericInput("apport", "Le montant de l’apport personnel (€):",  step = 50,value = 10000,min = 0 ),
-    numericInput("emprunteur1", "Revenu mensuel net emprunteur 1 (€):", step = 50,value = 10000,min = 0 ),
-    numericInput("emprunteur2", "Revenu mensuel net emprunteur 2 (€):", step = 50, value = 10000,min = 0 ),
-    numericInput("assurance", "Le taux d’assurance (%):", value = 0.25,min = 0),
-    numericInput("frais", "Frais bancaires (€):", value = 1500,min = 0 ),
-    numericInput("nombre_mois", "Nombre de mois:", min = 1, max = 12, value = 12),
-    actionButton("calculate_btn", "Calculer"),
-               
-                 
-   
+    numericInput("emprunt", "Saisir le montant de l'emprunt:",
+                 value = 10000,
+                 min = 0
+    ),
+    sliderInput("duree", "Saisir la durée en années:",
+                 value = 20,
+                 min = 1,
+                 max = 30
+    ),
+    numericInput("taux_interet", "Saisir un taux d'intérêt:",
+                 value = 1,
+                 min = 0
+    ),
+    numericInput("assurance", "Saisir un taux d'assurance:",
+                 value = 0.25,
+                 min = 0
+    ),
+    numericInput("frais", "Saisir le montant des frais:",
+                 value = 2000,
+                 min = 0
+    ),
+    numericInput("apport", "Saisir le montant de l'apport personnel:",
+                 value = 0,
+                 min = 0
+    ),
+    numericInput("emprunteur1", "Saisir les revenus de l'emprunteur 1:",
+                 value = 3000,
+                 min = 0
+    ),
+    numericInput("emprunteur2", "Saisir les revenus de l'emprunteur 2:",
+                 value = 0,
+                 min = 0
+    ),
     
     # Onglets
     sidebarMenu(
-      menuItem("simulation", tabName = "simulation", icon = icon("list-alt")),
+      menuItem("Résumé", tabName = "resume", icon = icon("list-alt")),
       menuItem("Tableau d'amortissement", tabName = "amortissement", icon = icon("table")),
-      menuItem("Capacité d'Emprunt", tabName = "capacite_emprunt",icon = icon("calculator"),
-      menuItem("Histogramme", tabName = "histogramme"))
-      
+      menuItem("Capacité d'Emprunt", tabName = "capacite_emprunt",icon = icon("calculator")
       )
-    
+    )
   ),
   dashboardBody(tabItems(
     tabItem(
-      tabName = "simulation",
+      tabName = "resume",
       fluidRow(
         valueBoxOutput("taux_interet"),
         valueBoxOutput("mensualite"),
@@ -60,16 +78,24 @@ ui <- dashboardPage(skin = "purple",
         DTOutput("amortissement"),
         valueBoxOutput("cout_total_"),
         valueBoxOutput("cout_interets_"),
-        valueBoxOutput("cout_total_assurance_"),
-        downloadButton("telecharger", "Télécharger")
-      )
+        valueBoxOutput("cout_total_assurance_")
+        )
     ),
     tabItem(
       tabName = "capacite_emprunt",
-      numericInput("revenus", "Revenus mensuel:",value = 3000, min = 0),
-      numericInput("taux_endettement", "Taux d'Endettement:",value = 30,min = 1 ),
-      numericInput("duree_credit", "Durée du Crédit en années (≤ 25):",value = 10,min = 1 ),
-   fluidRow(
+      numericInput("revenus", "Revenus mensuel:",
+                   value = 3000,
+                   min = 0
+      ),
+      numericInput("taux_endettement", "Taux d'Endettement:",
+                   value = 30,
+                   min = 1
+      ),
+      numericInput("duree_credit", "Durée du Crédit en années (≤ 25):",
+                   value = 10,
+                   min = 1
+      ),
+      fluidRow(
         valueBoxOutput("duree_credit"),
         valueBoxOutput("taux_endettement_cap"),
         valueBoxOutput("interet"),
@@ -77,20 +103,15 @@ ui <- dashboardPage(skin = "purple",
         valueBoxOutput("mensualite_tot"),
         valueBoxOutput("capacite")
       )
-    ),
-   tabItem(
-     tabName = "histogramme",
-     box(
-       width = 12,title = "Histogramme du solde restant dû",  background = "red",
-       status = "primary", solidHeader = TRUE, collapsible = TRUE,
-     plotOutput("distPlot"))
+    )
   )
   )
 )
-)
+
 # Server ------------------------------------------------------------------
 
 server <- function(input, output) {
+  
   # Résumé ------------------------------------------------------------------
   
   #' Title calcul_mensualite
@@ -175,45 +196,28 @@ server <- function(input, output) {
     )
   })
   
-  
-  
   output$taux_interet <- renderValueBox({
     valueBox(format(paste0(input$taux_interet, " %")),"Taux d'intérêt (%)",
              icon = icon("percent"),color = "purple")
   })
   
-
-  
   output$mensualite <- renderValueBox({
-    mensualite_value <- round(donnees()$mensualite_totale, 2)
-    valueBox(
-      format(paste0(mensualite_value, " €")),      # Formatted monthly payment with euro symbol
-      "Mensualité Totale (€)",                      # Title
-      icon = icon("euro"),                          # Icon set to euro
-      color = "green"                                # Color based on the threshold
-    )
+    valueBox(format(paste0(
+      round(donnees()$mensualite_totale, 2), " €")),"Mensualité Totale (€)",
+      icon = icon("euro"),color = "green")
   })
-  
-  
-  # 
-  # output$mensualite <- renderValueBox({
-  #   valueBox(format(paste0(
-  #     round(donnees()$mensualite_totale, 2), " €")),"Mensualité Totale (€)",
-  #     icon = icon("euro"))
-  # })
-  
   
   output$mensualite_sans_assurance <- renderValueBox({
     valueBox(format(paste0(
       round(donnees()$mensualite_sans_assurance, 2), " €")),
       "Mensualité sans Assurance (€)",
-      icon = icon("euro"),color = "teal")
+      icon = icon("euro"),color = "green")
   })
   
   output$cout_assurances <- renderValueBox({
     valueBox(format(paste0(round(donnees()$cout_assurance_mensuel, 2), " €")),
              "Coût Assurance Mensuel (€)",
-             icon = icon("euro"), color = "orange")
+             icon = icon("shield"),color = "blue")
   })
   
   output$cout_total_assurance <- renderValueBox({
@@ -227,37 +231,27 @@ server <- function(input, output) {
     valueBox(format(paste0(
       round(donnees_amortissement()$cout_total_interet, 2)," €")),
       "Coût Total des Intérêts (€)",
-      icon = icon("euro"),color = "fuchsia")
+      icon = icon("euro"),color = "green")
   })
   
   output$cout_total <- renderValueBox({
     valueBox(format(paste0(
       round(donnees_amortissement()$cout_total_credit, 2)," €")),
       "Coût Total du Crédit (€)",
-      icon = icon("line-chart"))
+      icon = icon("euro"),color = "green")
   })
   
   output$taeg <- renderValueBox({
-    taeg_value <- round(donnees_amortissement()$taeg, 3)
-    
-    color <- ifelse(taeg_value >= 0, "green", "red")
-    
-    valueBox(
-      format(paste0(taeg_value, " %")),
-      "TAEG (%)",
-      icon = icon("balance-scale"),
-      color = color
-    )
+    valueBox(format(paste0(round(donnees_amortissement()$taeg, 3), " %")),"TAEG (%)",
+             icon = icon("percent"),color = "red")
   })
-  
   
   output$taux_endettement <- renderValueBox({
     valueBox(format(paste0(round(donnees()$taux_endettement, 3), " %")),
              "Taux d'Endettement (%)",
-             icon = icon("percent"))
+             icon = icon("percent"),
+             color <- ifelse(donnees()$taux_endettement <= 30, "green", "red"))
   })
-  
- 
   
   
   # Tableau d'amortissement -------------------------------------------------
@@ -285,7 +279,7 @@ server <- function(input, output) {
   #' @export
   #' @examples
   #' tab_amor <- calcul_tableau_amortissement(emprunt = 100000, taux_interet = 4.5,
-  #'  duree = 20, frais = 2000, assurance = 0.5, apport = 20000)
+  #'  duree = 20, assurance = 0.5, apport = 20000)
   #' print(tab_amor)
   
   calcul_tableau_amortissement <-
@@ -315,17 +309,20 @@ server <- function(input, output) {
         # Calcul du capital remboursé au mois en cours
         principal_mois <- mensualite_sans_assurance - interets_mois
         
-        mensualite_totale <-mensualite_sans_assurance + assurance_mensuel
+        mensualite_totale <-
+          mensualite_sans_assurance + assurance_mensuel
         
         tableau_amortissement <- rbind(tableau_amortissement,
-                                       c(mois,round(capital_restant, 2),round(interets_mois, 2),
-                                        round(principal_mois, 2),
+                                       c(
+                                         mois,
+                                         round(capital_restant, 2),
+                                         round(interets_mois, 2),
+                                         round(principal_mois, 2),
                                          round(assurance_mensuel, 2),
-                                         round(mensualite_totale, 2)))
-                                       
+                                         round(mensualite_totale, 2)
+                                       ))
         
-        # Calcul du capital restant dû au mois en cours :: 
-        
+        # Calcul du capital restant dû au mois en cours
         capital_restant <- capital_restant - principal_mois
         
       }
@@ -357,8 +354,7 @@ server <- function(input, output) {
     cout_total_interet <- sum(as.numeric(tab_amor$Interets))
     
     # Calcul du TAEG
-    
-    taeg <- ((cout_total_credit+input$frais) / input$emprunt - 1) / input$duree * 100
+    taeg <- (((sum(as.numeric(tab_amor$Mensualite)) + input$frais) - input$emprunt) / input$emprunt) * input$duree * 12
     
     return(
       list(
@@ -369,23 +365,23 @@ server <- function(input, output) {
       )
     )
   })
- 
+  
   output$amortissement <- renderDT({
     calcul_tableau_amortissement(
-    emprunt = input$emprunt,
-    taux_interet = input$taux_interet,
-    duree = input$duree,
-    assurance = input$assurance,
-    apport = input$apport
-  )
-}, extensions = "Buttons", options = list(
-  lengthChange = TRUE,
-  dom = "Blrtip",
-  buttons = c("copy", "csv", "excel", "pdf", "print"),
-  lengthMenu = list(c(-1, 10, 12, 15, 25, 50, 100), c("All", "10", "12", "15", "25", "50", "100"))
-))
-
- 
+      emprunt = input$emprunt,
+      taux_interet = input$taux_interet,
+      duree = input$duree,
+      assurance = input$assurance,
+      apport = input$apport
+    )
+  }, extensions = "Buttons", options = list(
+    lengthChange = TRUE,
+    dom = "Blrtip",
+    buttons = c("copy", "csv", "excel", "pdf", "print"),
+    lengthMenu = list(c(12, 25, 50, 100, -1),
+                      c("12", "25", "50", "100", "All"))
+  ))
+  
   output$cout_total_ <- renderValueBox({
     valueBox(format(paste0(
       round(donnees_amortissement()$cout_total_credit, 2)," €")),
@@ -407,24 +403,6 @@ server <- function(input, output) {
       icon = icon("euro"))
   })
   
-  # Téléchargement ----------------------------------------------------------
-  
-  output$telecharger <- downloadHandler(
-    filename = function() {
-      paste("Tableau d'amortissement-", Sys.Date(), ".csv", sep = "")
-    },
-    content = function(file) {
-      tab_amor <- calcul_tableau_amortissement(
-        emprunt = input$emprunt,
-        taux_interet = input$taux_interet,
-        duree = input$duree,
-        assurance = input$assurance,
-        apport = input$apport
-      )
-      write.csv(tab_amor, file, row.names = FALSE)
-    }
-  )
-  
   # Capacité d'emprunt ------------------------------------------------------
   
   #' Title capacite_endettement
@@ -432,7 +410,7 @@ server <- function(input, output) {
   #' Cette fonction calcule la capacité d'endettement en fonction des revenus,
   #' du taux d'endettement et de la durée du crédit immobilier.
   #' Le taux d'intérêt varie en fonction de la durée du crédit(meilleurtaux.com)
-  #' Le taux d'assurance annuelle est fixe à 0.2%
+  #' Le taux d'assurance annuelle est fixé à 0.2%
   #' 
   #' @param revenus Le revenus mensuel
   #' @param taux_dendettement Le taux d'endettement souhaité
@@ -455,7 +433,6 @@ server <- function(input, output) {
     
     # Taux d'intérêt en fonction de la durée du crédit
     # selon meilleurtaux.com (très bon taux)
-    
     if (duree <= 7) {
       taux_interet_annuel <- 3.46
       
@@ -472,21 +449,18 @@ server <- function(input, output) {
       taux_interet_annuel <- 4.37
     }
     
-    # Calcul des taux mensuels :
-    
+    # Calcul des taux mensuels
     taux_interet <- taux_interet_annuel / 12 / 100
     taux_assurance <- 0.2
     taux_assurance_mens <- taux_assurance / 12 / 100
     
-    # Calcul des mensualités maximales :
-    
+    # Calcul des mensualités maximales
     mensualite_maximale_avec_assurance <-
       revenus * (taux_dendettement / 100)
     mensualite_maximale_apres_assurance <-
       mensualite_maximale_avec_assurance - (mensualite_maximale_avec_assurance * taux_assurance)
     
-    # Capacité d'emprunt : 
-    
+    # Capacité d'emprunt
     capacite_emprunt <-
       mensualite_maximale_apres_assurance * (1 - (1 + taux_interet) ^ (-duree * 12)) / taux_interet
     
@@ -546,38 +520,6 @@ server <- function(input, output) {
       "Capcité d'emprunt (€)",
       icon = icon("euro"))
   })
-
-  
-  output$distPlot <- renderPlot({
-    data <- calcul_tableau_amortissement(emprunt,taux_interet,duree,assurance,apport) 
-    plot <- ggplot(data, aes(x = duree, y = emprunt, fill = variable)) +
-      geom_bar(stat = "identity") +
-      labs(title = "Distribution Plot",
-           x = "X-axis Label",
-           y = "Y-axis Label") +
-      
-      theme_minimal()  # Use your preferred theme or customize further
-    
-    # Print the plot
-    print(plot)
-  })
-  
-  
-  
-  
-  
-  
-  
-  
-   
 }
-  
-  
-  
-  
-  
-  
-  
-
 
 shinyApp(ui = ui, server = server)
