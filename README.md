@@ -1,6 +1,8 @@
 # Shiny pour simuler un crédit immobilier 
 
-*Le projet consiste en un simulateur de crédit immobilier construit avec Shiny, un cadre de développement pour R. L'application permet aux utilisateurs de saisir divers paramètres liés à leur projet immobilier, tels que le montant du crédit, la durée du crédit, le taux d'intérêt, l'apport personnel, les revenus mensuels, etc. En fonction de ces paramètres, l'application calcule et affiche diverses informations financières, notamment la mensualité totale, le coût total du crédit, le taux d'endettement, etc.*
+*Le projet consiste en un simulateur de crédit immobilier construit avec Shiny, un cadre de développement pour R. L'application permet aux utilisateurs de saisir divers paramètres liés à leur projet immobilier, tels que le montant du crédit, la durée du crédit, le taux d'intérêt, l'apport personnel, les revenus mensuels, etc. 
+
+En fonction de ces paramètres, l'application calcule et affiche diverses informations financières, notamment la mensualité totale, le coût total du crédit, le taux d'endettement, etc.*
 
 
 **Caractéristiques Principales** 
