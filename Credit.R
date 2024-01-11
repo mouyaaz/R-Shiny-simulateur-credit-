@@ -5,107 +5,110 @@ library(shinydashboard)
 
 # Interface ---------------------------------------------------------------
 
-ui <- dashboardPage(
-  dashboardHeader(title = "Crédit immobilier"),  # Titre
-  dashboardSidebar(
-    
-    h4(tags$a(href = "https://github.com/mouyaaz", "Mustapha OUYAAZ")),
-    h4(tags$a(href = "https://github.com/taphakh", "Moustapha KHATTARY")),
-    
-    # Entrées
-    numericInput("emprunt", "Saisir le montant de l'emprunt:",
-                 value = 10000,
-                 min = 0
-    ),
-    sliderInput("duree", "Saisir la durée en années:",
-                 value = 20,
-                 min = 1,
-                 max = 30
-    ),
-    numericInput("taux_interet", "Saisir un taux d'intérêt:",
-                 value = 1,
-                 min = 0
-    ),
-    numericInput("assurance", "Saisir un taux d'assurance:",
-                 value = 0.25,
-                 min = 0
-    ),
-    numericInput("frais", "Saisir le montant des frais:",
-                 value = 2000,
-                 min = 0
-    ),
-    numericInput("apport", "Saisir le montant de l'apport personnel:",
-                 value = 0,
-                 min = 0
-    ),
-    numericInput("emprunteur1", "Saisir les revenus de l'emprunteur 1:",
-                 value = 3000,
-                 min = 0
-    ),
-    numericInput("emprunteur2", "Saisir les revenus de l'emprunteur 2:",
-                 value = 0,
-                 min = 0
-    ),
-    
-    # Onglets
-    sidebarMenu(
-      menuItem("Résumé", tabName = "resume", icon = icon("list-alt")),
-      menuItem("Tableau d'amortissement", tabName = "amortissement", icon = icon("table")),
-      menuItem("Capacité d'Emprunt", tabName = "capacite_emprunt",icon = icon("calculator")
-      )
-    )
-  ),
-  dashboardBody(tabItems(
-    tabItem(
-      tabName = "resume",
-      fluidRow(
-        valueBoxOutput("taux_interet"),
-        valueBoxOutput("mensualite"),
-        valueBoxOutput("mensualite_sans_assurance"),
-        valueBoxOutput("cout_assurances"),
-        valueBoxOutput("cout_total_assurance"),
-        valueBoxOutput("cout_interets"),
-        valueBoxOutput("cout_total"),
-        valueBoxOutput("taeg"),
-        valueBoxOutput("taux_endettement")
-      )
-    ),
-    tabItem(
-      "amortissement",
-      box(
-        width = 12,
-        title = "Tableau d'amortissement",
-        DTOutput("amortissement"),
-        valueBoxOutput("cout_total_"),
-        valueBoxOutput("cout_interets_"),
-        valueBoxOutput("cout_total_assurance_")
-        )
-    ),
-    tabItem(
-      tabName = "capacite_emprunt",
-      numericInput("revenus", "Revenus mensuel:",
-                   value = 3000,
-                   min = 0
-      ),
-      numericInput("taux_endettement", "Taux d'Endettement:",
-                   value = 30,
-                   min = 1
-      ),
-      numericInput("duree_credit", "Durée du Crédit en années (≤ 25):",
-                   value = 10,
-                   min = 1
-      ),
-      fluidRow(
-        valueBoxOutput("duree_credit"),
-        valueBoxOutput("taux_endettement_cap"),
-        valueBoxOutput("interet"),
-        valueBoxOutput("taux_assurance_cap"),
-        valueBoxOutput("mensualite_tot"),
-        valueBoxOutput("capacite")
-      )
-    )
-  )
-  )
+ui <- dashboardPage(skin = "purple",
+                    dashboardHeader(title = "Crédit immobilier"),  # Titre
+                    dashboardSidebar(
+                      
+                      h4(tags$a(href = "https://github.com/mouyaaz", "Mustapha OUYAAZ")),
+                      h4(tags$a(href = "https://github.com/taphakh", "Moustapha KHATTARY")),
+                      
+                      # Entrées
+                      numericInput("emprunt", "Saisir le montant de l'emprunt:",
+                                   value = 10000,
+                                   min = 0
+                      ),
+                      sliderInput("duree", "Saisir la durée en années:",
+                                  value = 20,
+                                  min = 1,
+                                  max = 30
+                      ),
+                      numericInput("taux_interet", "Saisir un taux d'intérêt:",
+                                   value = 1,
+                                   min = 0,
+                                   max=100,
+                                   step = 0.01
+                      ),
+                      numericInput("assurance", "Saisir un taux d'assurance:",
+                                   value = 0.25,
+                                   min = 0,
+                                   max=100
+                      ),
+                      numericInput("frais", "Saisir le montant des frais:",
+                                   value = 2000,
+                                   min = 0
+                      ),
+                      numericInput("apport", "Saisir le montant de l'apport personnel:",
+                                   value = 0,
+                                   min = 0
+                      ),
+                      numericInput("emprunteur1", "Saisir les revenus de l'emprunteur 1:",
+                                   value = 3000,
+                                   min = 0
+                      ),
+                      numericInput("emprunteur2", "Saisir les revenus de l'emprunteur 2:",
+                                   value = 3000,
+                                   min = 0
+                      ),
+                      
+                      # Onglets
+                      sidebarMenu(
+                        menuItem("Résumé", tabName = "resume", icon = icon("list-alt")),
+                        menuItem("Tableau d'amortissement", tabName = "amortissement", icon = icon("table")),
+                        menuItem("Capacité d'Emprunt", tabName = "capacite_emprunt",icon = icon("calculator")
+                        )
+                      )
+                    ),
+                    dashboardBody(tabItems(
+                      tabItem(
+                        tabName = "resume",
+                        fluidRow(
+                          valueBoxOutput("taux_interet"),
+                          valueBoxOutput("mensualite"),
+                          valueBoxOutput("mensualite_sans_assurance"),
+                          valueBoxOutput("cout_assurances"),
+                          valueBoxOutput("cout_total_assurance"),
+                          valueBoxOutput("cout_interets"),
+                          valueBoxOutput("cout_total"),
+                          valueBoxOutput("taeg"),
+                          valueBoxOutput("taux_endettement")
+                        )
+                      ),
+                      tabItem(
+                        "amortissement",
+                        box(
+                          width = 12,
+                          title = "Tableau d'amortissement",
+                          DTOutput("amortissement"),
+                          valueBoxOutput("cout_total_"),
+                          valueBoxOutput("cout_interets_"),
+                          valueBoxOutput("cout_total_assurance_")
+                        )
+                      ),
+                      tabItem(
+                        tabName = "capacite_emprunt",
+                        numericInput("revenus", "Revenus mensuel:",
+                                     value = 3000,
+                                     min = 0
+                        ),
+                        numericInput("taux_endettement", "Taux d'Endettement:",
+                                     value = 30,
+                                     min = 1
+                        ),
+                        numericInput("duree_credit", "Durée du Crédit en années (≤ 25):",
+                                     value = 10,
+                                     min = 1
+                        ),
+                        fluidRow(
+                          valueBoxOutput("duree_credit"),
+                          valueBoxOutput("taux_endettement_cap"),
+                          valueBoxOutput("interet"),
+                          valueBoxOutput("taux_assurance_cap"),
+                          valueBoxOutput("mensualite_tot"),
+                          valueBoxOutput("capacite")
+                        )
+                      )
+                    )
+                    )
 )
 
 # Server ------------------------------------------------------------------
@@ -491,7 +494,8 @@ server <- function(input, output) {
   output$taux_endettement_cap <- renderValueBox({
     valueBox(format(paste0(input$taux_endettement, " %")),
              "Taux d'endettement (%)",
-             icon = icon("percent"))
+             icon = icon("percent"),
+                    color = "purple")
   })
   
   output$interet <- renderValueBox({
@@ -518,7 +522,8 @@ server <- function(input, output) {
     valueBox(format(paste0(
       round(donnees_capacite()$Capacite, 2), " €")),
       "Capcité d'emprunt (€)",
-      icon = icon("euro"))
+      icon = icon("euro"),
+      color = "teal")
   })
 }
 
