@@ -13,39 +13,39 @@ ui <- dashboardPage(skin = "purple",
                       h4(tags$a(href = "https://github.com/taphakh", "Moustapha KHATTARY")),
                       
                       # Entrées
-                      numericInput("emprunt", "Saisir le montant de l'emprunt:",
+                      numericInput("emprunt", "Montant de l'emprunt:",
                                    value = 10000,
                                    min = 0
                       ),
-                      sliderInput("duree", "Saisir la durée en années:",
+                      sliderInput("duree", "Durée du crédit en années:",
                                   value = 20,
                                   min = 1,
                                   max = 30
                       ),
-                      numericInput("taux_interet", "Saisir un taux d'intérêt:",
+                      numericInput("taux_interet", "Taux d'intérêt (%):",
                                    value = 1,
                                    min = 0,
                                    max=100,
                                    step = 0.01
                       ),
-                      numericInput("assurance", "Saisir un taux d'assurance:",
+                      numericInput("assurance", "Taux d'assurance (%):",
                                    value = 0.25,
                                    min = 0,
                                    max=100
                       ),
-                      numericInput("frais", "Saisir le montant des frais:",
+                      numericInput("frais", "Montant des frais:",
                                    value = 2000,
                                    min = 0
                       ),
-                      numericInput("apport", "Saisir le montant de l'apport personnel:",
+                      numericInput("apport", "Montant de l'apport personnel:",
                                    value = 0,
                                    min = 0
                       ),
-                      numericInput("emprunteur1", "Saisir les revenus de l'emprunteur 1:",
+                      numericInput("emprunteur1", "Les revenus de l'emprunteur 1:",
                                    value = 3000,
                                    min = 0
                       ),
-                      numericInput("emprunteur2", "Saisir les revenus de l'emprunteur 2:",
+                      numericInput("emprunteur2", "Les revenus de l'emprunteur 2:",
                                    value = 3000,
                                    min = 0
                       ),
@@ -164,12 +164,6 @@ server <- function(input, output) {
       mensualite_totale <-
         mensualite_sans_assurance + cout_assurance_mensuel
       
-      # # Calcul du montant total à rembourser
-      # montant_total_a_rembourser <- frais + (nombre_mensualites * mensualite_totale)
-      # 
-      # # Nouveau calcul du TAEG
-      # taeg <- ((montant_total_a_rembourser - emprunt) / emprunt) * duree*12
-      
       # Taux d'endettement
       revenus_annuels <- (revenus1 + revenus2) * 12
       taux_endettement <-(mensualite_totale * 12 / revenus_annuels) * 100
@@ -181,7 +175,6 @@ server <- function(input, output) {
           mensualite_sans_assurance = mensualite_sans_assurance,
           cout_assurance_mensuel = cout_assurance_mensuel,
           taux_endettement = taux_endettement
-          # taeg = 0
         )
       )
     }
@@ -267,7 +260,6 @@ server <- function(input, output) {
   #' @param emprunt Le montant du crédit
   #' @param taux_interet Le taux annuel d'intérêt
   #' @param duree La Durée du crédit en années
-  #' @param frais Les frais et tous les autres frais bancaires
   #' @param assurance Le taux annuel d'assurance
   #' @param apport Le montant d'apport personnel
   #'
@@ -495,7 +487,7 @@ server <- function(input, output) {
     valueBox(format(paste0(input$taux_endettement, " %")),
              "Taux d'endettement (%)",
              icon = icon("percent"),
-                    color = "purple")
+             color = "purple")
   })
   
   output$interet <- renderValueBox({
