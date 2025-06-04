@@ -10,7 +10,7 @@ Le projet consiste en un simulateur de crédit immobilier construit avec Shiny. 
 
 3. Téléchargement de Données : Les utilisateurs ont la possibilité de télécharger le tableau d'amortissement en plusieurs formats.
 
-
+http://127.0.0.1:6779/
 
 ### Aperçu de l'application
 
